@@ -9,6 +9,7 @@ int main() {
     std::cin >> userName;
 
     std::cout << "Привет, " << userName << "! Рад видеть вас во вселенной, мяу!" << std::endl;
+    //test
 
     return 0;
 }
