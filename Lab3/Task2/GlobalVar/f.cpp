@@ -1,5 +1,8 @@
 // Глобальная переменная в f.cpp
-int globalVar = 20;
+int globalVar;
 
 // Объявление функции hello в f.cpp
-int hello(int num);
+int hello(int a)
+{
+    return a * globalVar;
+};

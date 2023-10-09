@@ -1,4 +1,4 @@
-#include <iostream>>
+#include <iostream>
 // Глобальная переменная в main.cpp
 int globalVar = 10;
 
