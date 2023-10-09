@@ -13,13 +13,5 @@ int main()
 
      std::cout << "Result: " << result << std::endl;
 
-
-    int nextFunction(int b)
-    {
-
-    } 
-
-
-
     return 0;
 }
