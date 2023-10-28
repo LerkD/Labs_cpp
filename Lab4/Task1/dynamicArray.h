@@ -3,7 +3,6 @@
 #include <iostream>
 #include <span>
 
-
 struct DynamicArray {
     int* buffer; //  указатель на буфер, который хранит элементы массива.
     int length; // текущее количество элементов в массиве.
