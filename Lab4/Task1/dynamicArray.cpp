@@ -4,7 +4,7 @@
 
 DynamicArray createDynamicArrayWithCapacity(int capacity) {
     DynamicArray arr;
-    arr.buffer = new int[capacity]; // 
+    arr.buffer = new int[capacity]; // Выделяем память для буфера (массива) с заданной начальной capacity
     arr.length = 0;
     arr.capacity = capacity;
     return arr;
@@ -16,11 +16,12 @@ DynamicArray createDynamicArray() {
 
 void addElementToArray(DynamicArray& arr, int element) {
     if (arr.length == arr.capacity) {
-        // Double the capacity and reallocate the buffer
+        // Проверяем, заполнен ли буфер
+        // Если буфер полный, увеличиваем его вдвое
         int newCapacity = arr.capacity * 2;
-        int* newBuffer = new int[newCapacity];
+        int* newBuffer = new int[newCapacity]; // Создаем новый буфер с увеличенной capacity
         for (int i = 0; i < arr.length; i++) {
-            newBuffer[i] = arr.buffer[i];
+            newBuffer[i] = arr.buffer[i]; // Копируем существующие элементы в новый буфер
         }
         delete[] arr.buffer;
         arr.buffer = newBuffer;
