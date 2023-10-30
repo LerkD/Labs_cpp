@@ -27,20 +27,27 @@ public:
     void add(const T& element);
 
     // Доступ к элементу по индексу
-    T& operator[](size_t index);
+    T& operator[](size_t index) { // Определила его здесь, как inline
+        assert(index >= 0 && index < length);
+        return buffer[index];
+    }
 
-    // Методы для чтения полей (read-only properties)
-    size_t size() const;
-    size_t capacity() const;
+    // Методы для чтения полей (read-only properties), тоже определила здесь, как inline
+    size_t size() const 
+    {
+        return length;
+    }
+    size_t capacity() const
+    {
+        return _capacity;
+    }
 
 private:
     T* buffer;        // Указатель на буфер
     size_t length;    // Текущее количество элементов
-    size_t maxCapacity; // Максимальная capacity (вместимость)
+    size_t _capacity; // Максимальная capacity (вместимость)
 
     // Метод для увеличения capacity (при необходимости)
     void increaseCapacity();
 
-    // Очистка памяти
-    void clear();
 };
