@@ -18,7 +18,7 @@ void addElementToArray(DynamicArray& arr, int element) {
     if (arr.length == arr.capacity) {
         // Проверяем, заполнен ли буфер
         // Если буфер полный, увеличиваем его вдвое
-        int newCapacity = arr.capacity * 2;
+        int newCapacity = arr.capacity <= 0 ? 1 : arr.capacity * 2; // Учтем случай, когда capacity равен или меньше 0, в этом случае устанавливаем newCapacity = 1 
         int* newBuffer = new int[newCapacity]; // Создаем новый буфер с увеличенной capacity
         for (int i = 0; i < arr.length; i++) {
             newBuffer[i] = arr.buffer[i]; // Копируем существующие элементы в новый буфер
@@ -42,8 +42,10 @@ std::span<int> getCurrentSpan(DynamicArray& arr) {
 }
 
 void clearDynamicArray(DynamicArray& arr) {
-    delete[] arr.buffer;
-    arr.buffer = nullptr;
+    if (arr.buffer) { // Добавила проверку, чтобы не случилось повторного удаления буфера, если он уже был освобжден.
+        delete[] arr.buffer;
+        arr.buffer = nullptr; // Или лучше все-таки убрать обнуление вообще, даже не проверяя arr.bufer?
+    }
     arr.length = 0;
     arr.capacity = 0;
 }
