@@ -1,10 +1,12 @@
 #pragma once
-
+#include <cassert>
 #include <cstddef> // Для size_t
 
 template <typename T>
 class DynamicArray {
 public:
+    static const size_t DEFAULT_CAPACITY = 4;
+
     // Конструктор без параметров (дефолтный capacity)
     DynamicArray();
 
@@ -25,19 +27,21 @@ public:
 
     // Добавление элемента в массив
     void add(const T& element);
+    void clear();
+    
 
     // Доступ к элементу по индексу
-    T& operator[](size_t index) { // Определила его здесь, как inline
+   inline T& operator[](size_t index) { // Определила его здесь, как inline
         assert(index >= 0 && index < length);
         return buffer[index];
     }
 
     // Методы для чтения полей (read-only properties), тоже определила здесь, как inline
-    size_t size() const 
+    inline size_t size() const 
     {
         return length;
     }
-    size_t capacity() const
+    inline size_t capacity() const
     {
         return _capacity;
     }

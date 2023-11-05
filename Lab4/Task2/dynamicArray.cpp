@@ -8,10 +8,8 @@ DynamicArray<T>::DynamicArray() : buffer(nullptr), length(0), _capacity(4) {
 
 // Конструктор с заданным начальным capacity
 template <typename T>
-DynamicArray<T>::DynamicArray(size_t capacity) : DynamicArray() { // Перенаправила в конструктор по умолчанию 
-    maxCapacity = capacity;
-    // Получается, следующая строка вообще не нужна, так как она выполняется в конструкторе по умолчанию.
-    // buffer = new T[_сapacity];
+DynamicArray<T>::DynamicArray(size_t capacity) : buffer(nullptr), length(0), _capacity(capacity) {
+    buffer = new T[_capacity];
 }
 
 
@@ -23,7 +21,7 @@ DynamicArray<T>::~DynamicArray() {
 
 // Конструктор копирования
 template <typename T>
-DynamicArray<T>::DynamicArray(const DynamicArray& other) : DynamicArray() { // То же самое, перенаправила в конструктор по умолчанию 
+DynamicArray<T>::DynamicArray(const DynamicArray& other) : buffer(nullptr), length(0), _capacity(other._capacity) {
     buffer = new T[_capacity];
     for (size_t i = 0; i < other.length; i++) {
         buffer[i] = other.buffer[i];
@@ -64,6 +62,14 @@ void DynamicArray<T>::add(const T& element) {
     }
     buffer[length] = element;
     length++;
+}
+
+template <typename T>
+void DynamicArray<T>::clear() {
+    free(buffer);
+    buffer = nullptr;
+    length = 0;
+    _capacity = 0;
 }
 
 // Метод для увеличения capacity (при необходимости)
