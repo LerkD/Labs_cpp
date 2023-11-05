@@ -5,10 +5,8 @@
 int main() {
     // Тест 1: Создаем DynamicArray с дефолтным capacity (4)
     {
-        DynamicArray<int> arr1; // Не очень понимаю, почему тест плохой? 
-        /* Нам же не требуется проверять начальное значение capacity, нужно просто проверить, 
-        что DynamicArray создает объект с дефолтным capacity, которая равна 4*/
-        assert(arr1.capacity() == 4); // Проверяем capacity после создания
+        DynamicArray<int> arr1;
+        assert(arr1.capacity() = DynamicArray<int>::DEFAULT_CAPACITY); 
     }
 
     // Тест 2: Добавляем элемент и проверяем длину
