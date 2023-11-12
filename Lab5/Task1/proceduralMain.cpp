@@ -5,6 +5,7 @@
 #include <vector>
 #include <span>
 
+
 // Перечисление для пола
 enum class Gender
 {
