@@ -12,7 +12,14 @@ enum class Gender
     Girl
 };
 
-// Отдельный enum для ошибок
+// Отдельный enum для ошибок сериализации
+enum class SerializationError
+{
+    Success,
+    CommaInStringField
+};
+
+// Отдельный enum для ошибок чтения и записи из файла
 enum class ErrorCode
 {
     Success,
@@ -23,19 +30,26 @@ enum class ErrorCode
     DeserializationError
 };
 
-
 // Структура данных
 struct Person
 {
-    std::array<char, 20 > name; // Строковое поле- - имя ученика
+    std::array<char, 20 > name; // Строковое поле - имя ученика
     int form;                   // Целочисленное поле - класс, в котором находится ученик
     Gender gender;             // Пол - гендер ученика 
 };
 
 // Функция сериализации строки
-void serializeString(const std::string& str, std::ostream& stream)
+SerializationError serializeString(const std::string& str, std::ostream& stream) // возвразает ошибку, если есть запятая, или успех, если все нормально (без запятых вконце)
 {
+    if (str.find(',') != std::string::npos)
+    {
+        // Обнаружена запятая в строке, сигнализируем об ошибке
+        std::cerr << "Ошибка сериализации строки: строковое поле содержит запятую." << std::endl;
+        return SerializationError::CommaInStringField;
+    }
+
     stream << str << ','; // Записываем строку с последующей запятой
+    return SerializationError::Success;
 }
 
 // Функция сериализации целого числа
@@ -56,6 +70,17 @@ void serializeGender(Gender gender, std::ostream& stream)
         stream << "G,"; // Записываем "G" для Girl с последующей запятой
         break;
     }
+}
+
+// Функция сериализации объекта Person
+void serializePerson(const Person& person, std::ostream& stream)
+{
+    if (serializeString(std::string(person.name.data()), stream) != SerializationError::Success)
+        return;
+
+    serializeInt(person.form, stream);                          // Сериализация целого числа
+    serializeGender(person.gender, stream);                    // Сериализация enum Gender
+    stream << '\n';                                           // Переход на новую строку после сериализации одного объекта
 }
 
 // Новая структура DeserializationResult для пункта 5
@@ -79,7 +104,12 @@ public:
         size_t commaPos = line.find(',', pos);
         if (commaPos == std::string::npos)
             return std::nullopt;
+        
         std::string nameStr = line.substr(pos, commaPos - pos);
+
+        if (serializeString(nameStr, std::cout) != SerializationError::Success)
+            return std::nullopt;
+
         std::copy(nameStr.begin(), nameStr.end(), person.name.begin());
         person.name[nameStr.size()] = '\0'; // Установка нулевого символа в конце строки
         pos = commaPos + 1;
@@ -97,15 +127,6 @@ public:
         return person;
     }
 };
-
-// Функция сериализации объекта Person
-void serializePerson(const Person& person, std::ostream& stream)
-{
-    serializeString(std::string(person.name.data()), stream); // Сериализация строки
-    serializeInt(person.form, stream);                          // Сериализация целого числа
-    serializeGender(person.gender, stream);                    // Сериализация enum Gender
-    stream << '\n';                                           // Переход на новую строку после сериализации одного объекта
-}
 
 // Функция десериализации строки
 std::string deserializeString(const char* buffer)
@@ -128,17 +149,14 @@ Gender deserializeGender(const char* buffer)
         return Gender::Girl; // Значения enum Gender для "G"
 }
 
-
-
 template <typename Span>
 void serializePeople(const Span& people, std::ostream& stream)
 {
     for (const auto& person : people)
     {
         serializePerson(person, stream); // Сериализация каждого объекта Person
-        std::cout << endl; // Разделяю новой строчкой 
+        std::cout << std::endl; // Разделяю новой строчкой 
     }
-         
 }
 
 // Функция для десериализации с использованием DeserializationResult
@@ -198,7 +216,7 @@ ErrorCode checkFileWrite(std::ostream& file)
 }
 
 // Функция для десериализации vector объектов Person
-std::vector<Person> deserializePeople(std::iostream& /*хотя коспилятор подсказывал std::istream*/ stream)
+std::vector<Person> deserializePeople(std::iostream& stream)
 {
     std::vector<Person> people;
     std::string line;
@@ -224,7 +242,7 @@ std::vector<Person> deserializePeople(std::iostream& /*хотя коспилят
     return people; // Возврат вектора, содержащего десериализованные объекты Person
 }
 
-Person generateRandomPerson() // Лучше функцией, чем отдельной программой
+Person generateRandomPerson()
 {
     Person person;
 
@@ -245,7 +263,6 @@ Person generateRandomPerson() // Лучше функцией, чем отдел�
     return person;
 }
 
-
 int main()
 {
     // Создание файла с сериализованными объектами
@@ -265,8 +282,7 @@ int main()
 
     outFile.close();
 
-    std::cout << "Рандомные данные сгенерировались и внесены ы data.csv." << std::endl;
-
+    std::cout << "Рандомные данные сгенерировались и внесены в data.csv." << std::endl;
 
     Person person1 = { "Lera", 10, Gender::Girl };
     Person person2 = { "Vasea", 12, Gender::Boy };
@@ -309,4 +325,3 @@ int main()
 
     return 0;
 }
-
