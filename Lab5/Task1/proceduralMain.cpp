@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <span>
+#include <optional>
 
 
 // Перечисление для пола
@@ -84,6 +85,11 @@ void serializePerson(const Person& person, std::ostream& stream)
     stream << '\n';                                           // Переход на новую строку после сериализации одного объекта
 }
 
+// Прототипы функций
+int deserializeInt(const char* buffer);
+Gender deserializeGender(const char* buffer);
+
+
 // Новая структура DeserializationResult для пункта 5
 struct DeserializationResult
 {
@@ -150,6 +156,7 @@ Gender deserializeGender(const char* buffer)
         return Gender::Girl; // Значения enum Gender для "G"
 }
 
+/* Со span компилятор ругался, поэтому я решила сделать с вектором. Он вообще на очень многое ругался, особенно на ifstream/ofstream/iostream. Но я поисправляла)))
 template <typename Span>
 void serializePeople(const Span& people, std::ostream& stream)
 {
@@ -159,9 +166,19 @@ void serializePeople(const Span& people, std::ostream& stream)
         std::cout << std::endl; // Разделяю новой строчкой 
     }
 }
+*/
+
+void serializePeople(const std::vector<Person>& people, std::ostream& stream)
+{
+    for (const auto& person : people)
+    {
+        serializePerson(person, stream); // Сериализация каждого объекта Person
+        std::cout << std::endl; // Разделяю новой строчкой 
+    }
+}
 
 // Функция для десериализации с использованием DeserializationResult
-DeserializationResult deserialize(std::iostream& stream)
+DeserializationResult deserialize(std::istream& stream)
 {
     PersonDeserializer deserializer;
 
@@ -181,7 +198,7 @@ DeserializationResult deserialize(std::iostream& stream)
 }
 
 // Функция для дополнительных проверок на ошибки при чтении файла
-ErrorCode checkFileRead(std::istream& file)
+ErrorCode checkFileRead(std::ifstream& file)
 {
     if (!file.is_open())
     {
@@ -199,7 +216,7 @@ ErrorCode checkFileRead(std::istream& file)
 }
 
 // Функция для дополнительных проверок на ошибки при записи файла
-ErrorCode checkFileWrite(std::ostream& file)
+ErrorCode checkFileWrite(std::ofstream& file)
 {
     if (!file.is_open())
     {
@@ -217,7 +234,7 @@ ErrorCode checkFileWrite(std::ostream& file)
 }
 
 // Функция для десериализации vector объектов Person
-std::vector<Person> deserializePeople(std::iostream& stream)
+std::vector<Person> deserializePeople(std::istream& stream)
 {
     std::vector<Person> people;
     std::string line;
@@ -326,3 +343,12 @@ int main()
 
     return 0;
 }
+
+/*Результат newData:
+GBGFDCFAFGAFGGABGAE	1	B
+DGFGFFGBBFBCAEFAEDD	3	G
+FCAEBBEBAEDABEFBDEA	1	B
+DDADGFACDGFAFGBCEED	11	B
+BCEBAEAGEDEADAFGDEF	6	B
+Petea	            5	B
+*/
