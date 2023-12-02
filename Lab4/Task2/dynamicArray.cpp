@@ -2,13 +2,11 @@
 
 // Конструктор без параметров (дефолтный capacity)
 template <typename T>
-DynamicArray<T>::DynamicArray() : buffer(nullptr), length(0), _capacity(4) {
-    buffer = new T[_capacity];
-}
+DynamicArray<T>::DynamicArray() : DynamicArray(DEFAULT_CAPACITY) {}
 
 // Конструктор с заданным начальным capacity
 template <typename T>
-DynamicArray<T>::DynamicArray(size_t capacity) : buffer(nullptr), length(0), _capacity(capacity) {
+DynamicArray<T>::DynamicArray(size_t capacity /* = DEFAULT_CAPACITY */) : buffer(nullptr), length(0), _capacity(capacity) {
     buffer = new T[_capacity];
 }
 
@@ -16,7 +14,7 @@ DynamicArray<T>::DynamicArray(size_t capacity) : buffer(nullptr), length(0), _ca
 // Деструктор
 template <typename T>
 DynamicArray<T>::~DynamicArray() {
-    clear();
+    destroy();
 }
 
 // Конструктор копирования
@@ -64,18 +62,11 @@ void DynamicArray<T>::add(const T& element) {
     length++;
 }
 
-template <typename T>
-void DynamicArray<T>::clear() {
-    free(buffer);
-    buffer = nullptr;
-    length = 0;
-    _capacity = 0;
-}
 
 // Метод для увеличения capacity (при необходимости)
 template <typename T>
 void DynamicArray<T>::increaseCapacity() {
-    _capacity *= 2;
+    _capacity =  (_capacity <= 0) ? 1 : _capacity * 2; // Учтем случай, когда capacity равен или меньше 0, в этом случае устанавливаем newCapacity = 1 
     T* newBuffer = new T[_capacity];
     for (size_t i = 0; i < length; i++) {
         newBuffer[i] = buffer[i];
@@ -86,12 +77,10 @@ void DynamicArray<T>::increaseCapacity() {
 
 // Очистка памяти
 template <typename T>
-void DynamicArray<T>::clear() {
+void DynamicArray<T>::destroy() {
     if (buffer) { // Тут тоже добавила эту проверку, как и в 1 таске, чтобы не было повторного удаления 
-        delete[] buffer;
-        buffer = nullptr;
+        delete[] buffer; 
         length = 0;
-    //_capacity = 0; Значит не меняю капесити, чтобы можно было повторно использовать?
     }
 }
 

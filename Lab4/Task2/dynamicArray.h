@@ -5,7 +5,7 @@
 template <typename T>
 class DynamicArray {
 public:
-    static const size_t DEFAULT_CAPACITY = 4;
+    inline static const size_t DEFAULT_CAPACITY = 4;
 
     // Конструктор без параметров (дефолтный capacity)
     DynamicArray();
@@ -28,6 +28,7 @@ public:
     // Добавление элемента в массив
     void add(const T& element);
     void clear();
+   
     
 
     // Доступ к элементу по индексу
@@ -53,5 +54,6 @@ private:
 
     // Метод для увеличения capacity (при необходимости)
     void increaseCapacity();
+    void destroy();
 
 };
