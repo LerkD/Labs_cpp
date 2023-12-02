@@ -14,8 +14,8 @@ enum class Gender
     Girl
 };
 
-// Отдельный enum для ошибок сериализации
-enum class SerializationError
+// Отдельный enum для ошибок сериализации строк
+enum class StringSerializationError
 {
     Success,
     CommaInStringField
@@ -35,29 +35,29 @@ enum class ErrorCode
 // Структура данных
 struct Person
 {
-    std::array<char, 20 > name; // Строковое поле - имя ученика
+    std::array<char, 20> name; // Строковое поле - имя ученика
     int form;                   // Целочисленное поле - класс, в котором находится ученик
     Gender gender;             // Пол - гендер ученика 
 };
 
 // Функция сериализации строки
-SerializationError serializeString(const std::string& str, std::ostream& stream) // возвразает ошибку, если есть запятая, или успех, если все нормально (без запятых вконце)
-{
-    if (str.find(',') != std::string::npos)
-    {
+StringSerializationError serializeString(std::string_view str, std::ostream& stream) {
+    if (str.find(',') != std::string_view::npos) {
+
         // Обнаружена запятая в строке, сигнализируем об ошибке
         std::cerr << "Ошибка сериализации строки: строковое поле содержит запятую." << std::endl;
-        return SerializationError::CommaInStringField;
+        return StringSerializationError::CommaInStringField;
     }
 
-    stream << str << ','; // Записываем строку с последующей запятой
-    return SerializationError::Success;
+    stream << str; // Записываем строку без лишней запятой
+    return StringSerializationError::Success;
 }
+
 
 // Функция сериализации целого числа
 void serializeInt(int value, std::ostream& stream)
 {
-    stream << value << ','; // Записываем целое число с последующей запятой
+    stream << value; // Записываем целое число с последующей запятой
 }
 
 // Функция сериализации enum Gender
@@ -77,9 +77,7 @@ void serializeGender(Gender gender, std::ostream& stream)
 // Функция сериализации объекта Person
 void serializePerson(const Person& person, std::ostream& stream)
 {
-    if (serializeString(std::string(person.name.data()), stream) != SerializationError::Success)
-        return;
-
+    serializeString(std::string_view(person.name.data()), stream); // Сериализация имени
     serializeInt(person.form, stream);                          // Сериализация целого числа
     serializeGender(person.gender, stream);                    // Сериализация enum Gender
     stream << '\n';                                           // Переход на новую строку после сериализации одного объекта
@@ -101,7 +99,7 @@ struct DeserializationResult
 class PersonDeserializer
 {
 public:
-    std::optional<Person> deserialize(const std::string& line) const // использую optional, т.к. мне кажется, что вместо того чтобы возвращать объект структуры с флагом успешности и значением, 
+    std::optional<Person> deserialize(std::string_view line) const // использую optional, т.к. мне кажется, что вместо того чтобы возвращать объект структуры с флагом успешности и значением, 
     // std::optional будет здесь более уместным.
     {
         Person person;
@@ -109,7 +107,7 @@ public:
 
         // Десериализация имени ученика
         size_t commaPos = line.find(',', pos);
-        if (commaPos == std::string::npos)
+        if (commaPos == std::string_view::npos)
             return std::nullopt;
         
         std::string nameStr = line.substr(pos, commaPos - pos);
@@ -130,25 +128,27 @@ public:
 
         // Десериализация пола
         person.gender = deserializeGender(line.substr(pos).c_str());
-
         return person;
     }
 };
 
 // Функция десериализации строки
-std::string deserializeString(const char* buffer)
-{
-    return std::string(buffer); // Вроде так правильно будет преобразовать в стринг
+std::string_view deserializeString(const char* buffer, size_t length) {
+    return std::string_view(buffer, length); // Возвращаем std::string_view из переданного буфера
 }
 
 // Функция десериализации целого числа
-int deserializeInt(const char* buffer)
-{
-    return std::stoi(buffer); // То же самое с целым числом
+int deserializeInt(std::string_view buffer) {
+    try {
+        return std::stoi(std::string(buffer));
+    } catch (const std::invalid_argument& e) {
+        std::cerr << "Ошибка преобразования строки в число: " << e.what() << std::endl;
+        return 0;
+    }
 }
 
 // Функция десериализации enum Gender
-Gender deserializeGender(const char* buffer)
+Gender deserializeGender(std::string_view buffer)
 {
     if (buffer[0] == 'B')
         return Gender::Boy;   // Значения enum Gender для "B"
