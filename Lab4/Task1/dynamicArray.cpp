@@ -44,7 +44,6 @@ std::span<int> getCurrentSpan(DynamicArray& arr) {
 void clearDynamicArray(DynamicArray& arr) {
     if (arr.buffer) { // Добавила проверку, чтобы не случилось повторного удаления буфера, если он уже был освобжден.
         delete[] arr.buffer;
-        arr.buffer = nullptr; // Или лучше все-таки убрать обнуление вообще, даже не проверяя arr.bufer?
     }
     arr.length = 0;
     arr.capacity = 0;

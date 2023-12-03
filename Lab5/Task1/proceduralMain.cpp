@@ -57,7 +57,7 @@ StringSerializationError serializeString(std::string_view str, std::ostream& str
 // Функция сериализации целого числа
 void serializeInt(int value, std::ostream& stream)
 {
-    stream << value; // Записываем целое число с последующей запятой
+    stream << value; // Записываем целое число 
 }
 
 // Функция сериализации enum Gender
@@ -85,7 +85,7 @@ void serializePerson(const Person& person, std::ostream& stream)
 
 // Прототипы функций
 int deserializeInt(const char* buffer);
-Gender deserializeGender(const char* buffer);
+Gender deserializeGender(std::string_view* buffer);
 
 
 // Новая структура DeserializationResult для пункта 5
@@ -112,7 +112,7 @@ public:
         
         std::string nameStr = line.substr(pos, commaPos - pos);
 
-        if (serializeString(nameStr, std::cout) != SerializationError::Success)
+        if (serializeString(nameStr, std::cerr) != StringSerializationError::Success) // cerrя
             return std::nullopt;
 
         std::copy(nameStr.begin(), nameStr.end(), person.name.begin());
@@ -143,6 +143,9 @@ int deserializeInt(std::string_view buffer) {
         return std::stoi(std::string(buffer));
     } catch (const std::invalid_argument& e) {
         std::cerr << "Ошибка преобразования строки в число: " << e.what() << std::endl;
+        return 0;
+    } catch (const std::out_of_range& e) {
+        std::cerr << "Ошибка: Число вне диапазона допустимых значений." << e.what() << std::endl;
         return 0;
     }
 }

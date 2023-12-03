@@ -33,7 +33,7 @@ class Person
 public:
     // Конструкторы
     Person() = default; // Дефолтный конструктор
-    Person(const std::string& name, int form, Gender gender);
+    Person(const std::string&& name, int form, Gender gender);
     Person(const Person& other); // Конструктор копирования
     Person(Person&& other) noexcept; // Конструктор перемещения
     ~Person() = default; // Деструктор
@@ -56,7 +56,7 @@ private:
 };
 
 // Реализация методов класса Person
-Person::Person(const std::string& name, int form, Gender gender)
+Person::Person(const std::string&& name, int form, Gender gender)
     : name(name), form(form), gender(gender) {}
 
 Person::Person(const Person& other)
@@ -117,7 +117,7 @@ Person Person::deserialize(const std::string& line)
     else
         gender = Gender::Girl;
 
-    return Person(nameStr, form, gender);
+    return Person(std::move(nameStr), form, gender);
 }
 
 std::ostream& operator<<(std::ostream& stream, const Person& person)
@@ -211,7 +211,7 @@ Person generateRandomPerson()
     // Генерация случайного пола
     Gender gender = static_cast<Gender>(rand() % 2);
 
-    return Person(name, form, gender);
+    return Person(std::move(name), form, gender);
 }
 
 int main()
