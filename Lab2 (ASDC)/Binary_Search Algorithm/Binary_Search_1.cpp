@@ -12,6 +12,7 @@
 #include <vector>
 #include <algorithm>
 #include <ctime>
+#include <chrono>
 
 int binarySearch(const std::vector<int>& arr, int target, int& attempts)
 {
@@ -73,14 +74,24 @@ int main()
     int attempts = 0;
     int result = binarySearch(arr, target, attempts);
 
+     // Измерение времени выполнения бинарного поиска
+    auto start = std::chrono::high_resolution_clock::now();
+    int results = binarySearch(arr, target, attempts);
+    auto end = std::chrono::high_resolution_clock::now();
+
     if (result != -1)
     {
-        std::cout << "Element " << target << " found at index " << result << " with " << attempts << " attempts." << std::endl;
+        std::cout << "Element " << target << " found at index " << results << " with " << attempts << " attempts." << std::endl;
     }
     else
     {
         std::cout << "Element " << target << " was not found in the vector." << std::endl;
     }
+
+    std::cout << std::endl;
+
+    std::chrono::duration<double> duration = end - start;
+    std::cout << "Binary Search Time: " << duration.count() << " seconds\n";
 
     std::cout << std::endl;
     return 0;
