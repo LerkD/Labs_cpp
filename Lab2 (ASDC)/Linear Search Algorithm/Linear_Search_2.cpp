@@ -7,6 +7,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <chrono>
 
 struct Contact {
     std::string name;
@@ -20,7 +21,7 @@ int linearSearchContact(const std::vector<Contact>& addressBook, const std::stri
             return i;  // Возвращаю индекс контакта, если найден
         }
     }
-    return -1; // Возвращаеим -1, если контакт не найден
+    return -1; // Возвращаем -1, если контакт не найден
 }
 
 int main() {
@@ -39,11 +40,20 @@ int main() {
     int result = linearSearchContact(addressBook, searchName);
 
     if (result != -1) {
-        std::cout << "Contact " << searchName << " was fount. His number is " << addressBook[result].phoneNumber << std::endl;
+        std::cout << "Contact " << searchName << " was found. His number is " << addressBook[result].phoneNumber << std::endl;
     } else {
         std::cout << "Contact " << searchName << " wasn't found." << std::endl;
     }
-    
+
     std:: cout << std::endl;
+
+    // Измерения времени линейного поиска 
+    auto start = std::chrono::high_resolution_clock::now();
+    int resultAbsent = linearSearchContact(addressBook, "NonExistentName");
+    auto end = std::chrono::high_resolution_clock::now();
+
+    std::chrono::duration<double> duration = end - start;
+    std::cout << "Linear Search Time: " << duration.count() << " seconds" << std::endl;
+
     return 0;
 }
