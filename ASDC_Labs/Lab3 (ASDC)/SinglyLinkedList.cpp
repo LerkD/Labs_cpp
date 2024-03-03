@@ -175,7 +175,6 @@ int main()
     Node* node2 = insertAfter(&personList, node1, Person{"Catea", 8, Gender::Girl});
     Node* node3 = insertAfter(&personList, node2, Person{"Anton", 12, Gender::Boy});
 
-
     // Печать списка
     std::cout << "Исходный список:" << std::endl;
     printList(&personList);
