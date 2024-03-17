@@ -1,34 +1,4 @@
-#include <iostream>
-#include <array>
-
-// Перечисление для пола
-enum class Gender
-{
-    Boy,
-    Girl
-};
-
-// Структура для данных
-struct Person
-{
-    std::array<char, 20> name; 
-    int form;                   
-    Gender gender;             
-};
-
-// Структура для узла в очереди
-struct QueueNode
-{
-    Person data;       
-    QueueNode* next;   
-};
-
-// Структура для очереди
-struct Queue
-{
-    QueueNode* head;    
-    QueueNode* tail;     
-};
+#include "header.h"
 
 // Функция для печати очереди
 void printQueue(const Queue* queue)

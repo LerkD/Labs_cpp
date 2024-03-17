@@ -1,34 +1,4 @@
-#include <iostream>
-#include <array>
-
-// Перечисление для пола
-enum class Gender
-{
-    Boy,
-    Girl
-};
-
-// Структура для данных
-struct Person
-{
-    std::array<char, 20> name;
-    int form;
-    Gender gender;
-};
-
-// Структура для узла стека
-struct StackNode
-{
-    Person data;
-    StackNode* next;
-};
-
-// Структура для стека
-struct Stack
-{
-    StackNode* top;
-    size_t size;
-};
+#include "header.h"
 
 // Является ли стек пустым
 bool isEmpty(const Stack* stack)
