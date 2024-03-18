@@ -183,7 +183,7 @@ int main()
     }
     else 
     {
-        std::cout << "\nAfter removing person with key \"Catea\" isn't found" << std::endl;
+        std::cout << "\nAfter removing, person with key \"Catea\" isn't found" << std::endl;
     }
 
     // Освобождение памяти
