@@ -27,7 +27,7 @@ int main()
     printPeople(people_span);
     std::cout << std::endl;
 
-    // Вывод Всей информации для Bubble Sort
+    // Вывод всей информации для Bubble Sort
     std::cout << "Bubble Sort Comparisons: " << comparisons << std::endl;
     std::cout << "Bubble Sort Swaps: " << swaps << std::endl;
     std::cout << "Bubble Sort Time: " << elapsed_seconds_bubble.count() << "s\n";
