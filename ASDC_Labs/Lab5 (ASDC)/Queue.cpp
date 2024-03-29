@@ -1,4 +1,25 @@
 #include "header.h"
+#include <cassert>
+
+// Структура для узла очереди
+struct QueueNode
+{
+    Person data;
+    QueueNode* next;
+};
+
+// Структура для очереди
+struct Queue
+{
+    QueueNode* head;
+    QueueNode* tail;
+};
+
+// Функция для проверки, пустая ли очередь (Как и указано в задание возвращаю true если очередь пуста, иначе false)
+bool isEmpty(const Queue* queue)
+{
+    return queue->head == nullptr;
+}
 
 // Функция для печати очереди
 void printQueue(const Queue* queue)
@@ -18,11 +39,11 @@ void printQueue(const Queue* queue)
 }
 
 // Функция для добавления элемента в конец очереди
-void enqueue(Queue* queue, const Person& value)
+void enqueue(Queue* queue, Person&& value)
 {
-    QueueNode* newNode = new QueueNode{value, nullptr};
+    QueueNode* newNode = new QueueNode{std::move(value), nullptr};
 
-    if (!queue->head) // Если очередь пуста
+    if (isEmpty(queue)) // Если очередь пуста
     {
         queue->head = newNode;
         queue->tail = newNode;
@@ -37,30 +58,19 @@ void enqueue(Queue* queue, const Person& value)
 // Функция для удаления элемента из начала очереди и возврата его значения
 Person dequeue(Queue* queue)
 {
-    if (!queue->head)
-    {
-        // Очередь пуста, возвращаем значение по умолчанию
-        std::cerr << "Очередь пустая. Возвращем значение по умолчанию." << std::endl;
-        return Person{};
-    }
+    assert((!isEmpty(queue)) && "Очередь пустая"); // Проверяем на то, не пустая ли очередь 
 
-    Person value = queue->head->data;
+    Person value = std::move(queue->head->data);
     QueueNode* tempNode = queue->head;
 
     queue->head = queue->head->next;
 
-    if (!queue->head) // Если после удаления очередь пуста, переношу указатель на конец
+    if (isEmpty(queue)) // Если после удаления очередь пуста, переношу указатель на конец
         queue->tail = nullptr;
 
     delete tempNode;
 
     return value;
-}
-
-// Функция для проверки, пустая ли очередь (Как и указано в задание возвращаю true если очередь пуста, иначе false)
-bool isEmpty(const Queue* queue)
-{
-    return queue->head == nullptr;
 }
 
 // Функция для освобождения памяти, выделенной под очередь
@@ -71,7 +81,6 @@ void cleanupQueue(Queue* queue)
         dequeue(queue);
     }
 }
-
 
 int main()
 {

@@ -1,5 +1,19 @@
 #include "header.h"
 
+// Структура для узла стека
+struct StackNode
+{
+    Person data;
+    StackNode* next;
+};
+
+// Структура для стека
+struct Stack
+{
+    StackNode* top;
+    size_t size;
+};
+
 // Является ли стек пустым
 bool isEmpty(const Stack* stack)
 {
@@ -7,17 +21,17 @@ bool isEmpty(const Stack* stack)
 }
 
 // Добавление элемента на вершину стека
-void push(Stack* stack, const Person& value)
+void push(Stack* stack, Person&& value)
 {
-    StackNode* newNode = new StackNode{value, stack->top};
+    StackNode* newNode = new StackNode{std::move(value), stack->top};
     stack->top = newNode;
     stack->size++;
 }
 
 // Получаем указатель на вершину стека (без удаления)
-StackNode* getLastElement(Stack* stack)
+Person* getLastElement(Stack* stack)
 {
-    return stack->top;
+    return &(stack->top->data);
 }
 
 // Удаляем элемент на вершине стека
@@ -76,20 +90,20 @@ int main()
 
 
     // Получаем указатель на вершину стека
-    StackNode* topElement = getLastElement(&personStack);
+    Person* topElement = getLastElement(&personStack);
     if (topElement)
     {
-        std::cout << "Вершина стека до удаления: " << topElement->data.name.data() << std::endl;
+        std::cout << "Вершина стека до удаления: " << topElement->name.data() << std::endl;
     }
 
     // Удаление элемента с вершины стека
     pop(&personStack);
     std::cout << std::endl;
 
-    StackNode* top1Element = getLastElement(&personStack);
-    if (topElement)
+    Person* top1Element = getLastElement(&personStack);
+    if (top1Element)
     {
-        std::cout << "Вершина стека после удаления: " << top1Element->data.name.data() << std::endl;
+        std::cout << "Вершина стека после удаления: " << top1Element->name.data() << std::endl;
     }
 
     // Вывод содержимого стека после удаления верхнего элемента
