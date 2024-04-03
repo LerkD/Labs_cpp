@@ -156,7 +156,7 @@ int main()
      if (find(&table, "Catea") != nullptr)
     {
         std::cout << "Added person: ";
-        printPerson(addedLera);
+        printPerson(addedCatea);
     }
 
     // Добавляем "Anton"
@@ -166,7 +166,7 @@ int main()
      if (find(&table, "Anton") != nullptr)
     {
         std::cout << "Added person: ";
-        printPerson(addedLera);
+        printPerson(addedAnton);
     }
 
     Person* notFound = find(&table, "Somebody");

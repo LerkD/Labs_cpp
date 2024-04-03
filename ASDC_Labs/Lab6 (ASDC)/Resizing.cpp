@@ -185,11 +185,12 @@ int main()
     Теперь capacity еще раз удвоилась и стала 4. Затем добавляется 2 и 3 элемент уже без resizing, т.к после второго элемента 
     вместимость 0.5, а после 3 - 0.75, что меньше максимальной. */
 
-     // Добавление элемента "Lera"
+    // Добавление элемента "Lera"
     Person* addedLera = add(&table, "Lera");
     // Проверка добавления и вывод информации о добавленном человеке
     *addedLera = Person {"Lera", 10, Gender::Girl};
-    if (addedLera != nullptr)
+
+    if (find(&table, "Lera") != nullptr)
     {
         std::cout << "Added person: ";
         printPerson(addedLera);
@@ -198,7 +199,8 @@ int main()
     // Добавляем "Catea"
     Person* addedCatea = add(&table, "Catea");
     *addedCatea = Person {"Catea", 8, Gender::Girl};
-    if (addedCatea != nullptr)
+
+     if (find(&table, "Catea") != nullptr)
     {
         std::cout << "Added person: ";
         printPerson(addedCatea);
@@ -208,7 +210,7 @@ int main()
     Person* addedAnton = add(&table, "Anton");
     *addedAnton = Person {"Anton", 12, Gender::Boy};
 
-    if (addedAnton != nullptr)
+     if (find(&table, "Anton") != nullptr)
     {
         std::cout << "Added person: ";
         printPerson(addedAnton);
