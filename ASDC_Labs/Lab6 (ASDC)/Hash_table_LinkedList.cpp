@@ -58,13 +58,13 @@ Person* find(HashTable* table, std::string_view key)
 }
 
 // Функция добавления элемента
-Person* add(HashTable* table, const Person& person, std::string_view key)
+Person* add(HashTable* table, std::string_view key) 
 {
     size_t index = computeIndex(table, key);
-    BucketNode* newNode = new BucketNode{person, key, nullptr}; // Создаем новый нод
+    BucketNode* newNode = new BucketNode{{}, key, nullptr}; // Создаем новый нод
     newNode->next = table->buckets[index]; // Добавляем его в начало соответствующего bucket
     table->buckets[index] = newNode;
-    return &(newNode->value); // Возвращаем адрес значения из нового узла
+   return &(newNode->value); // Возвращаем адрес значения из нового узла
 }
 
 
@@ -106,7 +106,7 @@ void free(HashTable* table)
     }
 }
 
-// Функция хэширования: суммирует коды по таблице АСХИ символов ключа
+// Функция хэширования: суммирует коды по таблице ASCII символов ключа
 size_t hashFunc(std::string_view key)
 {
     size_t hash = 0;
@@ -139,28 +139,34 @@ int main()
     HashTable table = createHashTable(10, hashFunc);
 
     // Добавление элемента "Lera"
-    Person* addedLera = add(&table, {"Lera", 10, Gender::Girl}, "Lera");
+    Person* addedLera = add(&table, "Lera");
     // Проверка добавления и вывод информации о добавленном человеке
-    if (addedLera != nullptr)
+    *addedLera = Person {"Lera", 10, Gender::Girl};
+
+    if (find(&table, "Lera") != nullptr)
     {
         std::cout << "Added person: ";
         printPerson(addedLera);
     }
 
     // Добавляем "Catea"
-    Person* addedCatea = add(&table, {"Catea", 8, Gender::Girl}, "Catea");
-    if (addedCatea != nullptr)
+    Person* addedCatea = add(&table, "Catea");
+    *addedCatea = Person {"Catea", 8, Gender::Girl};
+
+     if (find(&table, "Catea") != nullptr)
     {
         std::cout << "Added person: ";
-        printPerson(addedCatea);
+        printPerson(addedLera);
     }
 
     // Добавляем "Anton"
-    Person* addedAnton = add(&table, {"Anton", 12, Gender::Boy}, "Anton");
-    if (addedAnton != nullptr)
+    Person* addedAnton = add(&table, "Anton");
+    *addedAnton = Person {"Anton", 12, Gender::Boy};
+
+     if (find(&table, "Anton") != nullptr)
     {
         std::cout << "Added person: ";
-        printPerson(addedAnton);
+        printPerson(addedLera);
     }
 
     Person* notFound = find(&table, "Somebody");

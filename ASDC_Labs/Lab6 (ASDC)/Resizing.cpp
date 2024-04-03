@@ -87,17 +87,17 @@ void resize(HashTable* table)
 }
 
 // Функция добавления элемента. Тут же происходит и resizing 
-Person* add(HashTable* table, const Person& person, std::string_view key) 
+Person* add(HashTable* table, std::string_view key) 
 {
     if ((float)(table->size + 1) / table->capacity > table->loadFactor) 
     {
         resize(table);
-        std::cout <<"\nResizing was complited. New capacity is " << table ->capacity  << std:: endl;
+        std::cout <<"\nResizing was completed. New capacity is " << table ->capacity  << std:: endl;
         std::cout << std::endl;
     }
 
     size_t index = computeIndex(table, key);
-    BucketNode* newNode = new BucketNode{person, key, nullptr};
+    BucketNode* newNode = new BucketNode{{}, key, nullptr};
     newNode->next = table->buckets[index];
     table->buckets[index] = newNode;
     ++table->size;
@@ -145,7 +145,7 @@ void free(HashTable* table)
     }
 }
 
-// Функция хэширования: суммирует коды по таблице АСХИ символов ключа
+// Функция хэширования: суммирует коды по таблице ASCII символов ключа
 size_t hashFunc(std::string_view key) 
 {
     size_t hash = 0;
@@ -185,32 +185,42 @@ int main()
     Теперь capacity еще раз удвоилась и стала 4. Затем добавляется 2 и 3 элемент уже без resizing, т.к после второго элемента 
     вместимость 0.5, а после 3 - 0.75, что меньше максимальной. */
 
-    // Добавление элемента "Lera"
-    Person* addedLera = add(&table, {"Lera", 10, Gender::Girl}, "Lera");
+     // Добавление элемента "Lera"
+    Person* addedLera = add(&table, "Lera");
     // Проверка добавления и вывод информации о добавленном человеке
-    if (addedLera != nullptr) {
+    *addedLera = Person {"Lera", 10, Gender::Girl};
+    if (addedLera != nullptr)
+    {
         std::cout << "Added person: ";
         printPerson(addedLera);
     }
 
     // Добавляем "Catea"
-    Person* addedCatea = add(&table, {"Catea", 8, Gender::Girl}, "Catea");
-    if (addedCatea != nullptr) {
+    Person* addedCatea = add(&table, "Catea");
+    *addedCatea = Person {"Catea", 8, Gender::Girl};
+    if (addedCatea != nullptr)
+    {
         std::cout << "Added person: ";
         printPerson(addedCatea);
     }
 
     // Добавляем "Anton"
-    Person* addedAnton = add(&table, {"Anton", 12, Gender::Boy}, "Anton");
-    if (addedAnton != nullptr) {
+    Person* addedAnton = add(&table, "Anton");
+    *addedAnton = Person {"Anton", 12, Gender::Boy};
+
+    if (addedAnton != nullptr)
+    {
         std::cout << "Added person: ";
         printPerson(addedAnton);
     }
 
     Person* notFound = find(&table, "Somebody");
-    if (notFound != nullptr) {
+    if (notFound != nullptr)
+    {
         printPerson(notFound);
-    } else {
+    }
+    else 
+    {
         std::cout << "\nPerson with key \"Somebody\" isn't found" << std::endl;
     }
 
@@ -218,9 +228,12 @@ int main()
     remove(&table, "Catea");
 
     Person* removedPerson = find(&table, "Catea");
-    if (removedPerson != nullptr) {
+    if (removedPerson != nullptr)
+    {
         printPerson(removedPerson);
-    } else {
+    }
+    else 
+    {
         std::cout << "\nAfter removing, person with key \"Catea\" isn't found" << std::endl;
     }
 
