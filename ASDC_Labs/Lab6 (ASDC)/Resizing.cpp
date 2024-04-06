@@ -1,7 +1,8 @@
-// Скоро добавляю хедер для всех 3 файлов 
+// Скоро добавляю хедер для всех 3 файлов
 
 #include <iostream>
 #include <string_view>
+#include <vector>
 #include <array>
 #include <cmath>
 
@@ -21,7 +22,7 @@ struct Person
 };
 
 // Структура для нода в хэш-таблице
-struct BucketNode
+struct BucketNode 
 {
     Person value;
     std::string_view key;
@@ -31,12 +32,23 @@ struct BucketNode
 // Структура для хэш bтаблицы
 struct HashTable 
 {
-    std::array<BucketNode*, 10> buckets;
+    std::vector<BucketNode*> buckets; // Тогда легче использовать вектор, как мне кажется :/
     size_t (*hashFunc)(std::string_view);
-    size_t size; // Кол-во элементов сейчас 
-    size_t capacity; // Вместиность сейчас 
-    const float loadFactor = 0.9f; // Максимально допустимая заполниность 
+    size_t size; // Кол-во элементов сейчас
+    size_t capacity; // Вместиность сейчас
+    const float loadFactor = 0.5f; // Максимально допустимая заполниность
 };
+
+// Функция создания хэш-таблицы с заданным capacity и хэш функцией
+HashTable createHashTable(size_t capacity, size_t (*hashFunc)(std::string_view)) 
+{
+    HashTable table;
+    table.buckets.resize(capacity, nullptr);
+    table.hashFunc = hashFunc;
+    table.size = 0;
+    table.capacity = capacity;
+    return table;
+}
 
 // Функция вычисления индекса для ключа
 size_t computeIndex(HashTable* table, std::string_view key) 
@@ -64,11 +76,8 @@ Person* find(HashTable* table, std::string_view key)
 void resize(HashTable* table) 
 {
     size_t newCapacity = table->capacity * 2;
-    HashTable newTable;
-    newTable.hashFunc = table->hashFunc;
-    newTable.capacity = newCapacity;
+    HashTable newTable = createHashTable(newCapacity, table->hashFunc);
     newTable.size = 0;
-    newTable.buckets.fill(nullptr);
 
     for (size_t i = 0; i < table->capacity; ++i) {
         BucketNode* currentNode = table->buckets[i];
@@ -82,14 +91,19 @@ void resize(HashTable* table)
         }
     }
 
+    // Освобождаю память, выделенную под старые бакеты
+    table->buckets.clear();
+
     table->buckets = std::move(newTable.buckets);
     table->capacity = newCapacity;
 }
 
-// Функция добавления элемента. Тут же происходит и resizing 
+// Функция добавления элемента. Тут же происходит и resizing
 Person* add(HashTable* table, std::string_view key) 
 {
-    if ((float)(table->size + 1) / table->capacity > table->loadFactor) 
+    // Заметила, что в прошлый раз (с проверкой if) проверялось на заполненность только 1 раз.
+    // Затем, делался ресайзинг и сразу добавлялся человек. Без повторной проверки. 
+    while ((float)(table->size + 1) / table->capacity > table->loadFactor) 
     {
         resize(table);
         std::cout <<"\nResizing was completed. New capacity is " << table ->capacity  << std:: endl;
@@ -143,6 +157,7 @@ void free(HashTable* table)
             currentNode = nextNode;
         }
     }
+    table->buckets.clear();
 }
 
 // Функция хэширования: суммирует коды по таблице ASCII символов ключа
@@ -156,17 +171,6 @@ size_t hashFunc(std::string_view key)
     return hash;
 }
 
-// Функция создания хэш-таблицы с заданным capacity и хэш функцией
-HashTable createHashTable(size_t capacity, size_t (*hashFunc)(std::string_view)) 
-{
-    HashTable table;
-    table.hashFunc = hashFunc;
-    table.capacity = capacity;
-    table.size = 0;
-    table.buckets.fill(nullptr);
-    return table;
-}
-
 // Функция вывода информации о человеке
 void printPerson(const Person* person) 
 {
@@ -177,7 +181,7 @@ void printPerson(const Person* person)
 int main() 
 {
     // Создаем хэш таблицы с функцией хэширования и заданным capacity
-    HashTable table = createHashTable(1, hashFunc); 
+    HashTable table = createHashTable(1, hashFunc);
 
     /* Если первоначальная capacity == 1, а loadFacor = 0.9, значит уже до добовления первого элемента произойдет resizing, 
     так как, без него заполняемость была бы 1. После первого resize, вместимость стала 2, так как удвоилась.
@@ -185,12 +189,15 @@ int main()
     Теперь capacity еще раз удвоилась и стала 4. Затем добавляется 2 и 3 элемент уже без resizing, т.к после второго элемента 
     вместимость 0.5, а после 3 - 0.75, что меньше максимальной. */
 
+    /*UPD: Для проверки поменяло фактор заполненности до 50%, и добавила еще двух людей. 1 раз произошел ресайзинг до добавления кого-либо.
+    Потом после первого, затем после второго человека. Далее добавляем еще двух людей, происходит ресайзин, и добавляем последнего. */
+
     // Добавление элемента "Lera"
     Person* addedLera = add(&table, "Lera");
     // Проверка добавления и вывод информации о добавленном человеке
     *addedLera = Person {"Lera", 10, Gender::Girl};
 
-    if (find(&table, "Lera") != nullptr)
+    if (find(&table, "Lera") != nullptr) 
     {
         std::cout << "Added person: ";
         printPerson(addedLera);
@@ -200,7 +207,7 @@ int main()
     Person* addedCatea = add(&table, "Catea");
     *addedCatea = Person {"Catea", 8, Gender::Girl};
 
-     if (find(&table, "Catea") != nullptr)
+    if (find(&table, "Catea") != nullptr) 
     {
         std::cout << "Added person: ";
         printPerson(addedCatea);
@@ -210,13 +217,33 @@ int main()
     Person* addedAnton = add(&table, "Anton");
     *addedAnton = Person {"Anton", 12, Gender::Boy};
 
-     if (find(&table, "Anton") != nullptr)
+    if (find(&table, "Anton") != nullptr) 
     {
         std::cout << "Added person: ";
         printPerson(addedAnton);
     }
 
-    Person* notFound = find(&table, "Somebody");
+    // Добавляем "Vasea" для проверки 
+    Person* addedVasea = add(&table, "Vasea");
+    *addedVasea = Person {"Vasea", 1, Gender::Boy};
+
+    if (find(&table, "Vasea") != nullptr) 
+    {
+        std::cout << "Added person: ";
+        printPerson(addedVasea);
+    }
+
+    // Добавляем "Eva" для проверки 
+    Person* addedEva = add(&table, "Eva");
+    *addedEva= Person {"Eva", 1, Gender::Girl};
+
+    if (find(&table, "Vasea") != nullptr) 
+    {
+        std::cout << "Added person: ";
+        printPerson(addedEva);
+    }
+
+     Person* notFound = find(&table, "Somebody");
     if (notFound != nullptr)
     {
         printPerson(notFound);
