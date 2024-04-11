@@ -1,4 +1,60 @@
-#include "header.h"
+#include "header1.h"
+
+// Merge Sort
+void merge(std::span<Person> arr, int l, int m, int r, int& comparisons, int& swaps)
+{
+    int n1 = m - l + 1;
+    int n2 = r - m;
+
+    std::vector<Person> L(n1), R(n2);
+    for (int i = 0; i < n1; ++i)
+        L[i] = arr[l + i];
+    for (int j = 0; j < n2; ++j)
+        R[j] = arr[m + 1 + j];
+
+    int i = 0, j = 0, k = l;
+    while (i < n1 && j < n2)
+    {
+        ++comparisons;
+        if (L[i].form <= R[j].form)
+        {
+            arr[k] = L[i];
+            ++i;
+        }
+        else
+        {
+            arr[k] = R[j];
+            ++j;
+        }
+        ++swaps;
+        ++k;
+    }
+
+    while (i < n1)
+    {
+        arr[k] = L[i];
+        ++i;
+        ++k;
+    }
+
+    while (j < n2)
+    {
+        arr[k] = R[j];
+        ++j;
+        ++k;
+    }
+}
+
+void mergeSort(std::span<Person> arr, int l, int r, int& comparisons, int& swaps)
+{
+    if (l >= r)
+        return;
+    int m = l + (r - l) / 2;
+    mergeSort(arr, l, m, comparisons, swaps);
+    mergeSort(arr, m + 1, r, comparisons, swaps);
+    merge(arr, l, m, r, comparisons, swaps);
+}
+
 
 void runSortAlgorithm(std::span<Person> people_span)
 {
@@ -27,57 +83,7 @@ void runSortAlgorithm(std::span<Person> people_span)
 
 int main()
 {
-    std::array<Person, 5> people = {
-        {{"Lera", 12, Gender::Girl},
-         {"Anton", 9, Gender::Boy},
-         {"Dima", 7, Gender::Boy},
-         {"Catea", 8, Gender::Girl},
-         {"Asea", 3, Gender::Girl}}};
-
-    runSortAlgorithm(people);
-
-    std::cout << "------------\n" << std::endl;
-
-    // Другая конфигурация 
-    std::array<Person, 5> people2 = {
-        {{"Anton", 9, Gender::Boy},
-         {"Lera", 12, Gender::Girl},
-         {"Catea", 8, Gender::Girl},
-         {"Asea", 3, Gender::Girl},
-         {"Dima", 7, Gender::Boy}}};
-
-    runSortAlgorithm(people2);
-
-    std::cout << "------------\n" << std::endl;
-
-    // Другая конфигурация 
-    std::array<Person, 5> people3 = {
-        {{"Asea", 3, Gender::Girl},
-         {"Anton", 9, Gender::Boy},
-         {"Dima", 7, Gender::Boy},
-         {"Catea", 8, Gender::Girl},
-         {"Lera", 12, Gender::Girl}}};
-
-    runSortAlgorithm(people3);
-
-    std::cout << "------------\n" << std::endl;
-    std::cout << "Different size: \n" << std::endl;
-
-    std::array<Person, 12> people_long = {
-        {{"Lera", 12, Gender::Girl},
-         {"Anton", 9, Gender::Boy},
-         {"Dima", 7, Gender::Boy},
-         {"Catea", 8, Gender::Girl},
-         {"Asea", 3, Gender::Girl},
-         {"Masha", 1, Gender::Girl},
-         {"Vasea", 5, Gender::Boy},
-         {"Danil", 2, Gender::Boy},
-         {"Anea", 4, Gender::Girl},
-         {"Sonya", 11, Gender::Girl},
-         {"Misha", 10, Gender::Boy},
-         {"Olea", 11, Gender::Girl}}};
-
-    runSortAlgorithm(people_long);
+    runExample();
 
     return 0;
 }

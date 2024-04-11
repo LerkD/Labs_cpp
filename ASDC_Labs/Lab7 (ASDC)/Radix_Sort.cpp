@@ -1,4 +1,41 @@
-#include "header.h"
+#include "header1.h"
+
+// Radix Sort - Поразрядная сортировка 
+void radixSort(std::span<Person> arr, int& comparisons, int& swaps)
+{
+    // Находим максимальное значение класса для определения количества цифр
+    int max = arr[0].form;
+    for (const auto& person : arr)
+    {
+        if (person.form > max)
+            max = person.form;
+    }
+
+    // Применяем сортировку подсчетом для каждой цифры в числе
+    for (int exp = 1; max / exp > 0; exp *= 10)
+    {
+        std::array<std::vector<Person>, 10> buckets;
+
+        // Распределяем элементы в бакеты исходя ищ цифры в числе
+        for (const auto& person : arr)
+        {
+            int bucketIndex = (person.form / exp) % 10;
+            buckets[bucketIndex].push_back(person);
+        }
+
+        // Обновляем исходный массив, перенося элементы из бакетов
+        int index = 0;
+        for (auto& bucket : buckets)
+        {
+            for (const auto& person : bucket)
+            {
+                arr[index++] = person;
+                ++swaps;
+            }
+        }
+    }
+}
+
 
 void runSortAlgorithm(std::span<Person> people_span)
 {
@@ -26,57 +63,7 @@ void runSortAlgorithm(std::span<Person> people_span)
 }
 int main()
 {
-    std::array<Person, 5> people = {
-        {{"Lera", 12, Gender::Girl},
-         {"Anton", 9, Gender::Boy},
-         {"Dima", 7, Gender::Boy},
-         {"Catea", 8, Gender::Girl},
-         {"Asea", 3, Gender::Girl}}};
-
-    runSortAlgorithm(people);
-
-    std::cout << "------------\n" << std::endl;
-
-    // Другая конфигурация 
-    std::array<Person, 5> people2 = {
-        {{"Anton", 9, Gender::Boy},
-         {"Lera", 12, Gender::Girl},
-         {"Catea", 8, Gender::Girl},
-         {"Asea", 3, Gender::Girl},
-         {"Dima", 7, Gender::Boy}}};
-
-    runSortAlgorithm(people2);
-
-    std::cout << "------------\n" << std::endl;
-
-    // Другая конфигурация 
-    std::array<Person, 5> people3 = {
-        {{"Asea", 3, Gender::Girl},
-         {"Anton", 9, Gender::Boy},
-         {"Dima", 7, Gender::Boy},
-         {"Catea", 8, Gender::Girl},
-         {"Lera", 12, Gender::Girl}}};
-
-    runSortAlgorithm(people3);
-
-    std::cout << "------------\n" << std::endl;
-    std::cout << "Different size: \n" << std::endl;
-
-    std::array<Person, 12> people_long = {
-        {{"Lera", 12, Gender::Girl},
-         {"Anton", 9, Gender::Boy},
-         {"Dima", 7, Gender::Boy},
-         {"Catea", 8, Gender::Girl},
-         {"Asea", 3, Gender::Girl},
-         {"Masha", 1, Gender::Girl},
-         {"Vasea", 5, Gender::Boy},
-         {"Danil", 2, Gender::Boy},
-         {"Anea", 4, Gender::Girl},
-         {"Sonya", 11, Gender::Girl},
-         {"Misha", 10, Gender::Boy},
-         {"Olea", 11, Gender::Girl}}};
-
-    runSortAlgorithm(people_long);
+   runExample();
 
     return 0;
 }
